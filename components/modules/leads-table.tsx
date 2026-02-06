@@ -54,17 +54,23 @@ const mockLeads: Lead[] = [
 
 interface LeadsTableProps {
   searchTerm: string
+  filterPriority?: string
+  filterStatus?: string
+  filterDate?: string
 }
 
-export function LeadsTable({ searchTerm }: LeadsTableProps) {
+export function LeadsTable({ searchTerm, filterPriority = '', filterStatus = '', filterDate = '' }: LeadsTableProps) {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
   const [modalType, setModalType] = useState<'action' | 'conversation' | 'detail' | null>(null)
 
-  const filteredLeads = mockLeads.filter(
-    (lead) =>
-      lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lead.dni.includes(searchTerm)
-  )
+  const filteredLeads = mockLeads.filter((lead) => {
+    const matchesSearch = lead.name.toLowerCase().includes(searchTerm.toLowerCase()) || lead.dni.includes(searchTerm)
+    const matchesPriority = !filterPriority || lead.priority === filterPriority
+    const matchesStatus = !filterStatus || lead.status === filterStatus
+    const matchesDate = !filterDate || lead.assignedDate >= filterDate
+
+    return matchesSearch && matchesPriority && matchesStatus && matchesDate
+  })
 
   const handleAction = (lead: Lead, type: 'action' | 'conversation' | 'detail') => {
     setSelectedLead(lead)
@@ -117,56 +123,64 @@ export function LeadsTable({ searchTerm }: LeadsTableProps) {
               </tr>
             </thead>
             <tbody>
-              {filteredLeads.map((lead) => (
-                <tr key={lead.id} className="border-b border-border hover:bg-secondary/50 transition-colors">
-                  <td className="px-6 py-4 font-mono text-foreground">{lead.dni}</td>
-                  <td className="px-6 py-4 font-medium text-foreground">{lead.name}</td>
-                  <td className="px-6 py-4 text-foreground">{lead.phone}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(lead.status)}`}>
-                      {lead.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-foreground">{lead.assignedDate}</td>
-                  <td className="px-6 py-4 text-foreground">{lead.product}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(lead.priority)}`}>
-                      {lead.priority}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleAction(lead, 'action')}
-                        className="text-foreground hover:bg-secondary"
-                        title="Acciones comerciales"
-                      >
-                        <Briefcase className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleAction(lead, 'conversation')}
-                        className="text-foreground hover:bg-secondary"
-                        title="Ver conversación"
-                      >
-                        <MessageSquare className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleAction(lead, 'detail')}
-                        className="text-foreground hover:bg-secondary"
-                        title="Ver detalle"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                    </div>
+              {filteredLeads.length > 0 ? (
+                filteredLeads.map((lead) => (
+                  <tr key={lead.id} className="border-b border-border hover:bg-secondary/50 transition-colors">
+                    <td className="px-6 py-4 font-mono text-foreground">{lead.dni}</td>
+                    <td className="px-6 py-4 font-medium text-foreground">{lead.name}</td>
+                    <td className="px-6 py-4 text-foreground">{lead.phone}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(lead.status)}`}>
+                        {lead.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-foreground">{lead.assignedDate}</td>
+                    <td className="px-6 py-4 text-foreground">{lead.product}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(lead.priority)}`}>
+                        {lead.priority}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleAction(lead, 'action')}
+                          className="text-foreground hover:bg-secondary"
+                          title="Acciones comerciales"
+                        >
+                          <Briefcase className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleAction(lead, 'conversation')}
+                          className="text-foreground hover:bg-secondary"
+                          title="Ver conversación"
+                        >
+                          <MessageSquare className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleAction(lead, 'detail')}
+                          className="text-foreground hover:bg-secondary"
+                          title="Ver detalle"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8} className="px-6 py-12 text-center text-muted-foreground">
+                    No se encontraron leads con los filtros aplicados
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

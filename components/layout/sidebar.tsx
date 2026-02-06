@@ -1,6 +1,8 @@
-'use client';
+'use client'
 
-import { Users, ListChecks as ListTasks, Mail, MessageSquare, Users2 } from 'lucide-react'
+import { Users, ListChecks as ListTasks, Mail, MessageSquare, Users2, Calendar, LogOut } from 'lucide-react'
+import { useAuth } from '@/contexts/auth-context'
+import { Button } from '@/components/ui/button'
 
 interface SidebarProps {
   activeModule: string
@@ -8,6 +10,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ activeModule, onModuleChange }: SidebarProps) {
+  const { user, logout } = useAuth()
+
   const modules = [
     {
       id: 'leads',
@@ -23,6 +27,11 @@ export function Sidebar({ activeModule, onModuleChange }: SidebarProps) {
       id: 'campaigns',
       label: 'Campañas',
       icon: Mail,
+    },
+    {
+      id: 'calendar',
+      label: 'Calendario',
+      icon: Calendar,
     },
     {
       id: 'templates',
@@ -69,9 +78,19 @@ export function Sidebar({ activeModule, onModuleChange }: SidebarProps) {
         })}
       </nav>
 
-      <div className="p-4 border-t border-sidebar-border text-sm text-primary-foreground/80">
-        <p>CRM Comercial</p>
-        <p className="text-xs mt-1">v1.0</p>
+      <div className="p-4 border-t border-sidebar-border">
+        <div className="mb-4">
+          <p className="text-sm text-primary-foreground/80">{user?.name}</p>
+          <p className="text-xs text-primary-foreground/60">{user?.role}</p>
+        </div>
+        <Button
+          onClick={logout}
+          variant="outline"
+          className="w-full flex items-center justify-center space-x-2 border-primary-foreground text-primary-foreground hover:bg-primary/80 bg-transparent"
+        >
+          <LogOut className="w-4 h-4" />
+          <span>Cerrar Sesión</span>
+        </Button>
       </div>
     </aside>
   )

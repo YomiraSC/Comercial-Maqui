@@ -16,18 +16,29 @@ export function CampaignModal({ onClose }: CampaignModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     database: 'Clientes Premium',
-    filters: '',
+    filters: [] as string[],
     template: 'Welcome Email',
+    cluster: 'default',
   })
 
   const databases = ['Clientes Premium', 'Clientes Activos', 'Clientes Inactivos', 'Nuevos Leads']
   const templates = ['Welcome Email', 'Come Back Offer', 'Product Announcement', 'Special Offer']
   const filterOptions = ['Edad 25-45', 'Zona Madrid', 'Último contacto hace 90 días', 'Compra anterior']
+  const clusters = ['default', 'premium-users', 'high-value', 'at-risk']
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
+    })
+  }
+
+  const handleFilterChange = (filter: string, checked: boolean) => {
+    setFormData({
+      ...formData,
+      filters: checked 
+        ? [...formData.filters, filter]
+        : formData.filters.filter(f => f !== filter)
     })
   }
 
@@ -106,13 +117,30 @@ export function CampaignModal({ onClose }: CampaignModalProps) {
                     <label key={filter} className="flex items-center">
                       <input
                         type="checkbox"
-                        defaultChecked={false}
+                        checked={formData.filters.includes(filter)}
+                        onChange={(e) => handleFilterChange(filter, e.target.checked)}
                         className="rounded border-border"
                       />
                       <span className="ml-2 text-sm text-foreground">{filter}</span>
                     </label>
                   ))}
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-foreground mb-2">Cluster de Segmentación</label>
+                <select
+                  name="cluster"
+                  value={formData.cluster}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:border-primary"
+                >
+                  {clusters.map((c) => (
+                    <option key={c} value={c}>
+                      {c === 'default' ? 'Cluster Predeterminado' : `Cluster: ${c}`}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
@@ -132,9 +160,13 @@ export function CampaignModal({ onClose }: CampaignModalProps) {
               </div>
 
               <div className="bg-secondary/50 border border-border rounded-lg p-4">
-                <p className="text-sm font-semibold text-foreground mb-2">Vista Previa</p>
-                <p className="text-sm text-muted-foreground">Asunto: Bienvenido a nuestra plataforma</p>
-                <p className="text-sm text-muted-foreground mt-2">Cuerpo: Contenido del email con la plantilla seleccionada...</p>
+                <p className="text-sm font-semibold text-foreground mb-2">Resumen de Configuración</p>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p>BD: {formData.database}</p>
+                  <p>Filtros: {formData.filters.length > 0 ? formData.filters.join(', ') : 'Ninguno'}</p>
+                  <p>Cluster: {formData.cluster}</p>
+                  <p>Plantilla: {formData.template}</p>
+                </div>
               </div>
             </>
           )}

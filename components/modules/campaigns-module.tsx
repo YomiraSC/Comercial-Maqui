@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Plus, Edit2, Trash2 } from 'lucide-react'
+import { Plus, Edit2, Trash2, Eye } from 'lucide-react'
 import { CampaignModal } from './modals/campaign-modal'
+import { CampaignDetailModal } from './modals/campaign-detail-modal'
 
 interface Campaign {
   id: string
@@ -43,6 +44,8 @@ const mockCampaigns: Campaign[] = [
 export function CampaignsModule() {
   const [campaigns, setCampaigns] = useState(mockCampaigns)
   const [showModal, setShowModal] = useState(false)
+  const [showDetailModal, setShowDetailModal] = useState(false)
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null)
 
   const handleDelete = (id: string) => {
     setCampaigns(campaigns.filter((c) => c.id !== id))
@@ -62,9 +65,9 @@ export function CampaignsModule() {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="bg-background border-b border-border p-6">
-        <div className="flex justify-between items-center">
+    <div className="p-6 h-full overflow-auto">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Campañas</h1>
             <p className="text-muted-foreground mt-1">Gestiona tus campañas comerciales</p>
@@ -77,80 +80,89 @@ export function CampaignsModule() {
             Nueva Campaña
           </Button>
         </div>
-      </div>
 
-      <div className="flex-1 overflow-auto p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {campaigns.map((campaign) => (
-            <Card key={campaign.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-lg font-bold text-foreground">{campaign.name}</h3>
-                  <span className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(campaign.status)}`}>
-                    {campaign.status}
-                  </span>
-                </div>
-
-                <div className="space-y-3 mb-4 text-sm">
-                  <div>
-                    <p className="text-muted-foreground">Base de Datos</p>
-                    <p className="text-foreground font-medium">{campaign.database}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Filtros</p>
-                    <p className="text-foreground text-xs">{campaign.filters}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Plantilla</p>
-                    <p className="text-foreground font-medium">{campaign.template}</p>
-                  </div>
-                  <div className="flex justify-between pt-2">
-                    <div>
-                      <p className="text-muted-foreground text-xs">Leads</p>
-                      <p className="text-foreground font-bold">{campaign.leads}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground text-xs">Creada</p>
-                      <p className="text-foreground text-sm">{campaign.createdDate}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 pt-4 border-t border-border">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1 bg-transparent"
-                  >
-                    <Edit2 className="w-4 h-4 mr-1" />
-                    Editar
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDelete(campaign.id)}
-                    className="text-accent hover:text-accent hover:bg-accent/10"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-
-        {campaigns.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-muted-foreground mb-4">No hay campañas creadas</p>
-            <Button onClick={() => setShowModal(true)} className="bg-accent hover:bg-accent/90 text-accent-foreground">
-              <Plus className="w-4 h-4 mr-2" />
-              Crear Primera Campaña
-            </Button>
+        <Card className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border bg-secondary">
+                  <th className="px-6 py-4 text-left font-semibold text-foreground">Nombre</th>
+                  <th className="px-6 py-4 text-left font-semibold text-foreground">Base de Datos</th>
+                  <th className="px-6 py-4 text-left font-semibold text-foreground">Plantilla</th>
+                  <th className="px-6 py-4 text-left font-semibold text-foreground">Leads</th>
+                  <th className="px-6 py-4 text-left font-semibold text-foreground">Estado</th>
+                  <th className="px-6 py-4 text-left font-semibold text-foreground">Creada</th>
+                  <th className="px-6 py-4 text-right font-semibold text-foreground">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {campaigns.map((campaign) => (
+                  <tr key={campaign.id} className="border-b border-border hover:bg-secondary/50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-foreground">{campaign.name}</td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground">{campaign.database}</td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground">{campaign.template}</td>
+                    <td className="px-6 py-4 font-semibold text-foreground">{campaign.leads}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(campaign.status)}`}>
+                        {campaign.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-muted-foreground">{campaign.createdDate}</td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setSelectedCampaign(campaign)
+                            setShowDetailModal(true)
+                          }}
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDelete(campaign.id)}
+                          className="h-8 w-8 p-0 text-accent hover:text-accent hover:bg-accent/10"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
+
+          {campaigns.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground mb-4">No hay campañas creadas</p>
+              <Button onClick={() => setShowModal(true)} className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                <Plus className="w-4 h-4 mr-2" />
+                Crear Primera Campaña
+              </Button>
+            </div>
+          )}
+        </Card>
       </div>
 
       {showModal && <CampaignModal onClose={() => setShowModal(false)} />}
+      {showDetailModal && selectedCampaign && (
+        <CampaignDetailModal 
+          campaign={selectedCampaign}
+          onClose={() => setShowDetailModal(false)}
+        />
+      )}
     </div>
   )
 }
