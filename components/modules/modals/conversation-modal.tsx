@@ -2,8 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { X, Send } from 'lucide-react'
-import { useState } from 'react'
+import { X } from 'lucide-react'
 
 interface ConversationModalProps {
   lead: {
@@ -15,29 +14,20 @@ interface ConversationModalProps {
 }
 
 export function ConversationModal({ lead, onClose }: ConversationModalProps) {
-  const [messages, setMessages] = useState<Array<{ id: number; text: string; sender: 'user' | 'lead' }>>([
-    { id: 1, text: 'Hola, ¿cómo estás?', sender: 'lead' },
-    { id: 2, text: 'Hola! Bien, gracias. Te contacto para hablar sobre nuestros planes.', sender: 'user' },
-    { id: 3, text: 'Perfecto, me interesa saber más.', sender: 'lead' },
-  ])
-  const [inputValue, setInputValue] = useState('')
-
-  const handleSend = () => {
-    if (inputValue.trim()) {
-      setMessages([
-        ...messages,
-        { id: messages.length + 1, text: inputValue, sender: 'user' },
-      ])
-      setInputValue('')
-    }
-  }
+  const messages = [
+    { id: 1, text: 'Hola, ¿cómo estás?', sender: 'lead' as const },
+    { id: 2, text: 'Hola! Bien, gracias. Te contacto para hablar sobre nuestros planes.', sender: 'user' as const },
+    { id: 3, text: 'Perfecto, me interesa saber más.', sender: 'lead' as const },
+    { id: 4, text: 'Excelente, me gustaría agendar una llamada para explicarte los detalles.', sender: 'user' as const },
+    { id: 5, text: 'Claro, cuando prefieres?', sender: 'lead' as const },
+  ]
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-2xl h-96 flex flex-col">
         <div className="flex justify-between items-center p-6 border-b border-border">
           <div>
-            <h2 className="text-xl font-bold text-foreground">Conversación</h2>
+            <h2 className="text-xl font-bold text-foreground">Historial de Conversación</h2>
             <p className="text-sm text-muted-foreground mt-1">{lead.name} • {lead.phone}</p>
           </div>
           <button
@@ -67,20 +57,9 @@ export function ConversationModal({ lead, onClose }: ConversationModalProps) {
           ))}
         </div>
 
-        <div className="p-6 border-t border-border flex gap-2">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Escribe un mensaje..."
-            className="flex-1 px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:border-primary"
-          />
-          <Button
-            onClick={handleSend}
-            className="bg-accent hover:bg-accent/90 text-accent-foreground"
-          >
-            <Send className="w-4 h-4" />
+        <div className="p-6 border-t border-border flex justify-end">
+          <Button variant="outline" onClick={onClose}>
+            Cerrar
           </Button>
         </div>
       </Card>

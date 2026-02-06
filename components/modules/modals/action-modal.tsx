@@ -2,7 +2,8 @@
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { X } from 'lucide-react'
+import { X, ChevronLeft } from 'lucide-react'
+import { useState } from 'react'
 
 interface ActionModalProps {
   lead: {
@@ -15,32 +16,175 @@ interface ActionModalProps {
 }
 
 export function ActionModal({ lead, onClose }: ActionModalProps) {
+  const [selectedAction, setSelectedAction] = useState<string | null>(null)
+  const [callNotes, setCallNotes] = useState('')
+  const [appointmentData, setAppointmentData] = useState({
+    date: '',
+    time: '',
+    notes: '',
+  })
+
   const actions = [
     {
-      id: 1,
+      id: 'call',
       title: 'Llamada Telefónica',
-      description: 'Registra una llamada con el lead',
+      description: 'Registra notas de una llamada con el lead',
       icon: '☎️',
     },
     {
-      id: 2,
-      title: 'Enviar Email',
-      description: 'Envía un email al lead',
-      icon: '📧',
-    },
-    {
-      id: 3,
-      title: 'Agendar Reunión',
-      description: 'Crea una cita con el lead',
+      id: 'schedule',
+      title: 'Agendar Llamada',
+      description: 'Programa una llamada para una fecha específica',
       icon: '📅',
     },
-    {
-      id: 4,
-      title: 'Nota Interna',
-      description: 'Añade notas sobre el lead',
-      icon: '📝',
-    },
   ]
+
+  const handleCallSubmit = () => {
+    console.log('Llamada registrada:', { lead: lead.name, notes: callNotes })
+    setCallNotes('')
+    setSelectedAction(null)
+    onClose()
+  }
+
+  const handleScheduleSubmit = () => {
+    console.log('Llamada agendada:', { lead: lead.name, date: appointmentData.date, time: appointmentData.time })
+    setAppointmentData({ date: '', time: '', notes: '' })
+    setSelectedAction(null)
+    onClose()
+  }
+
+  if (selectedAction === 'call') {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <Card className="w-full max-w-lg">
+          <div className="flex items-center gap-4 p-6 border-b border-border">
+            <button
+              onClick={() => setSelectedAction(null)}
+              className="p-1 hover:bg-secondary rounded-lg transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5 text-foreground" />
+            </button>
+            <div>
+              <h2 className="text-xl font-bold text-foreground">Llamada Telefónica</h2>
+              <p className="text-sm text-muted-foreground mt-1">{lead.name}</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="ml-auto p-1 hover:bg-secondary rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5 text-foreground" />
+            </button>
+          </div>
+
+          <div className="p-6 space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Notas de la Llamada</label>
+              <textarea
+                value={callNotes}
+                onChange={(e) => setCallNotes(e.target.value)}
+                placeholder="Escribe aquí las notas de la llamada..."
+                className="w-full px-4 py-3 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:border-primary resize-none"
+                rows={6}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setSelectedAction(null)}
+                className="text-foreground hover:bg-secondary"
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleCallSubmit}
+                className="bg-accent hover:bg-accent/90 text-accent-foreground"
+              >
+                Guardar Llamada
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
+    )
+  }
+
+  if (selectedAction === 'schedule') {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <Card className="w-full max-w-lg">
+          <div className="flex items-center gap-4 p-6 border-b border-border">
+            <button
+              onClick={() => setSelectedAction(null)}
+              className="p-1 hover:bg-secondary rounded-lg transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5 text-foreground" />
+            </button>
+            <div>
+              <h2 className="text-xl font-bold text-foreground">Agendar Llamada</h2>
+              <p className="text-sm text-muted-foreground mt-1">{lead.name}</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="ml-auto p-1 hover:bg-secondary rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5 text-foreground" />
+            </button>
+          </div>
+
+          <div className="p-6 space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Fecha</label>
+              <input
+                type="date"
+                value={appointmentData.date}
+                onChange={(e) => setAppointmentData({ ...appointmentData, date: e.target.value })}
+                className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:border-primary"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Hora</label>
+              <input
+                type="time"
+                value={appointmentData.time}
+                onChange={(e) => setAppointmentData({ ...appointmentData, time: e.target.value })}
+                className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:border-primary"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-foreground mb-2">Notas (Opcional)</label>
+              <textarea
+                value={appointmentData.notes}
+                onChange={(e) => setAppointmentData({ ...appointmentData, notes: e.target.value })}
+                placeholder="Notas adicionales..."
+                className="w-full px-4 py-3 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:border-primary resize-none"
+                rows={4}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setSelectedAction(null)}
+                className="text-foreground hover:bg-secondary"
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleScheduleSubmit}
+                className="bg-accent hover:bg-accent/90 text-accent-foreground"
+                disabled={!appointmentData.date || !appointmentData.time}
+              >
+                Agendar
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
+    )
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -62,7 +206,7 @@ export function ActionModal({ lead, onClose }: ActionModalProps) {
           {actions.map((action) => (
             <button
               key={action.id}
-              onClick={onClose}
+              onClick={() => setSelectedAction(action.id)}
               className="w-full p-4 border border-border rounded-lg hover:border-primary hover:bg-secondary transition-all text-left"
             >
               <div className="flex items-start">
