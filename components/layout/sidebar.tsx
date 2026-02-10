@@ -1,6 +1,6 @@
 'use client'
 
-import { Users, ListChecks as ListTasks, Mail, MessageSquare, Users2, Calendar, LogOut, DollarSign, Settings, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Users, ListChecks as ListTasks, Mail, MessageSquare, Users2, Calendar, LogOut, DollarSign, Settings, ChevronLeft, ChevronRight, TrendingUp } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { Button } from '@/components/ui/button'
 
@@ -40,6 +40,11 @@ export function Sidebar({ activeModule, onModuleChange, isMobile, collapsed = fa
       id: 'templates',
       label: 'Plantillas',
       icon: Mail,
+    },
+    {
+      id: 'advisors-activity',
+      label: 'Asesores',
+      icon: TrendingUp,
     },
     {
       id: 'bot-cost',

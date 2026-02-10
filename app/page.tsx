@@ -12,9 +12,10 @@ import { TemplatesModule } from '@/components/modules/templates-module'
 import { UsersModule } from '@/components/modules/users-module'
 import { BotCostModule } from '@/components/modules/bot-cost-module'
 import { RoutingRulesModule } from '@/components/modules/routing-rules-module'
+import { AdvisorsActivityModule } from '@/components/modules/advisors-activity-module'
 import { Menu, X, ChevronLeft, ChevronRight } from 'lucide-react'
 
-type ModuleType = 'leads' | 'tasks' | 'campaigns' | 'calendar' | 'templates' | 'users' | 'bot-cost' | 'routing-rules'
+type ModuleType = 'leads' | 'tasks' | 'campaigns' | 'calendar' | 'templates' | 'users' | 'bot-cost' | 'routing-rules' | 'advisors-activity'
 
 export default function Home() {
   const { isAuthenticated, loading } = useAuth()
@@ -91,6 +92,7 @@ export default function Home() {
           {activeModule === 'calendar' && <CalendarModule />}
           {activeModule === 'templates' && <TemplatesModule />}
           {activeModule === 'users' && <UsersModule />}
+          {activeModule === 'advisors-activity' && <AdvisorsActivityModule />}
           {activeModule === 'bot-cost' && <BotCostModule initialLeads={150} />}
           {activeModule === 'routing-rules' && <RoutingRulesModule />}
         </div>
