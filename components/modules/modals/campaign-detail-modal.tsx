@@ -36,9 +36,9 @@ export function CampaignDetailModal({ campaign, onClose }: CampaignDetailModalPr
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl bg-card max-h-96 overflow-auto">
-        <div className="p-6">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <Card className="w-full max-w-2xl bg-card flex flex-col max-h-[90vh]">
+        <div className="p-6 flex-shrink-0 border-b border-border">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-foreground">{campaign.name}</h2>
@@ -53,7 +53,7 @@ export function CampaignDetailModal({ campaign, onClose }: CampaignDetailModalPr
           </div>
 
           {/* Contactabilidad dashboard */}
-          <div className="space-y-4 mb-6">
+          <div className="space-y-4 overflow-y-auto flex-1">
             <div className="grid grid-cols-5 gap-3">
               {/** compute simple metrics */}
               {(() => {

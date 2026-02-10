@@ -52,13 +52,13 @@ export function CampaignModal({ onClose }: CampaignModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl">
-        <div className="flex justify-between items-center p-6 border-b border-border">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <Card className="w-full max-w-2xl flex flex-col max-h-[90vh]">
+        <div className="flex justify-between items-center p-6 border-b border-border flex-shrink-0">
           <div>
-            <h2 className="text-xl font-bold text-foreground">Nueva Campaña</h2>
+            <h2 className="text-xl font-bold text-foreground">{step === 'basic' ? 'Nueva Campaña' : 'Configuración'}</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              {step === 'basic' ? 'Información básica' : 'Configuración avanzada'}
+              {step === 'basic' ? 'Define los datos básicos de la campaña' : 'Configura los detalles de envío'}
             </p>
           </div>
           <button
@@ -69,7 +69,7 @@ export function CampaignModal({ onClose }: CampaignModalProps) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
           {step === 'basic' ? (
             <>
               <div>
@@ -172,7 +172,7 @@ export function CampaignModal({ onClose }: CampaignModalProps) {
           )}
         </form>
 
-        <div className="p-6 border-t border-border flex justify-between">
+        <div className="p-6 border-t border-border flex justify-between flex-shrink-0">
           <Button
             variant="outline"
             onClick={step === 'config' ? () => setStep('basic') : onClose}

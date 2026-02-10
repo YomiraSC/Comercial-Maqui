@@ -15,6 +15,7 @@ interface Appointment {
   location?: string
   description?: string
   type: 'llamada' | 'reunion' | 'video'
+  status: 'active' | 'cancelled'
 }
 
 export function CalendarModule() {
@@ -23,20 +24,22 @@ export function CalendarModule() {
       id: '1',
       title: 'Seguimiento de propuesta',
       leadName: 'Juan González',
-      date: '2024-02-10',
+      date: '2026-02-10',
       time: '10:00',
       location: 'Oficina Principal',
       description: 'Seguimiento a propuesta enviada',
-      type: 'reunion'
+      type: 'reunion',
+      status: 'active'
     },
     {
       id: '2',
       title: 'Llamada de ventas',
       leadName: 'María Rodriguez',
-      date: '2024-02-11',
+      date: '2026-02-11',
       time: '14:00',
       description: 'Llamada para cerrar venta',
-      type: 'llamada'
+      type: 'llamada',
+      status: 'active'
     },
   ])
 
@@ -78,6 +81,12 @@ export function CalendarModule() {
   const handleEdit = (appointment: Appointment) => {
     setEditingAppointment(appointment)
     setShowModal(true)
+  }
+
+  const handleToggleCancel = (id: string) => {
+    setAppointments(appointments.map(a => 
+      a.id === id ? { ...a, status: a.status === 'active' ? 'cancelled' : 'active' } : a
+    ))
   }
 
   const appointmentsToday = appointments.filter(a => a.date === currentDate.toISOString().split('T')[0])
@@ -154,23 +163,24 @@ export function CalendarModule() {
                   {day && (
                     <div className="h-full flex flex-col">
                       <span className="text-xs font-semibold text-foreground">{day}</span>
-                      <div className="flex-1 flex flex-col gap-0.5 mt-1">
-                        {appointmentsByDate(day as number).slice(0, 2).map(apt => (
+                      <div className="flex-1 flex flex-col gap-0.5 mt-1 overflow-y-auto">
+                        {appointmentsByDate(day as number).map(apt => (
                           <div
                             key={apt.id}
-                            className={`text-xs px-1 py-0.5 rounded truncate text-white font-medium ${
+                            className={`text-xs px-1 py-0.5 rounded cursor-pointer hover:opacity-80 transition-opacity ${
+                              apt.status === 'cancelled' ? 'opacity-50' : 'opacity-100'
+                            } ${
                               apt.type === 'llamada' ? 'bg-blue-500' :
                               apt.type === 'reunion' ? 'bg-primary' : 'bg-purple-500'
-                            }`}
+                            } text-white font-medium truncate`}
+                            onClick={() => handleEdit(apt)}
+                            title={`${apt.time} - ${apt.title}${apt.status === 'cancelled' ? ' (CANCELADO)' : ''}`}
                           >
-                            {apt.time}
+                            <span className={apt.status === 'cancelled' ? 'line-through' : ''}>
+                              {apt.time} {apt.title.slice(0, 10)}
+                            </span>
                           </div>
                         ))}
-                        {appointmentsByDate(day as number).length > 2 && (
-                          <div className="text-xs text-muted-foreground px-1">
-                            +{appointmentsByDate(day as number).length - 2}
-                          </div>
-                        )}
                       </div>
                     </div>
                   )}
@@ -189,10 +199,19 @@ export function CalendarModule() {
                   .sort((a, b) => `${a.date}${a.time}`.localeCompare(`${b.date}${b.time}`))
                   .slice(0, 10)
                   .map(apt => (
-                    <div key={apt.id} className="p-3 bg-secondary rounded-lg border border-border hover:border-primary transition-colors">
+                    <div key={apt.id} className={`p-3 bg-secondary rounded-lg border transition-all ${
+                      apt.status === 'cancelled' 
+                        ? 'border-red-500/30 opacity-60' 
+                        : 'border-border hover:border-primary'
+                    }`}>
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <p className="font-semibold text-sm text-foreground">{apt.title}</p>
+                          <p className={`font-semibold text-sm text-foreground ${
+                            apt.status === 'cancelled' ? 'line-through text-muted-foreground' : ''
+                          }`}>{apt.title}</p>
+                          {apt.status === 'cancelled' && (
+                            <p className="text-xs font-semibold text-red-600 mt-1">CANCELADO</p>
+                          )}
                           <div className="space-y-1 mt-2">
                             <div className="flex items-center text-xs text-muted-foreground gap-2">
                               <User className="w-3 h-3" />
@@ -210,7 +229,7 @@ export function CalendarModule() {
                             )}
                           </div>
                         </div>
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 flex-col">
                           <Button
                             size="sm"
                             variant="ghost"
@@ -222,10 +241,14 @@ export function CalendarModule() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => handleDelete(apt.id)}
-                            className="text-accent hover:text-accent h-7 w-7 p-0"
+                            onClick={() => handleToggleCancel(apt.id)}
+                            className={`text-xs h-7 ${
+                              apt.status === 'cancelled' 
+                                ? 'text-green-600 hover:text-green-700' 
+                                : 'text-red-600 hover:text-red-700'
+                            }`}
                           >
-                            <X className="w-3 h-3" />
+                            {apt.status === 'cancelled' ? 'Reactivar' : 'Cancelar'}
                           </Button>
                         </div>
                       </div>

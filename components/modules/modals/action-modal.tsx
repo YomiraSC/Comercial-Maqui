@@ -55,9 +55,9 @@ export function ActionModal({ lead, onClose }: ActionModalProps) {
 
   if (selectedAction === 'call') {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <Card className="w-full max-w-lg">
-          <div className="flex items-center gap-4 p-6 border-b border-border">
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <Card className="w-full max-w-lg flex flex-col max-h-[90vh]">
+          <div className="flex items-center gap-4 p-6 border-b border-border flex-shrink-0">
             <button
               onClick={() => setSelectedAction(null)}
               className="p-1 hover:bg-secondary rounded-lg transition-colors"
@@ -88,7 +88,7 @@ export function ActionModal({ lead, onClose }: ActionModalProps) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 pt-4">
+            <div className="grid grid-cols-2 gap-3 pt-4 flex-shrink-0">
               <Button
                 variant="outline"
                 onClick={() => setSelectedAction(null)}
@@ -111,9 +111,9 @@ export function ActionModal({ lead, onClose }: ActionModalProps) {
 
   if (selectedAction === 'schedule') {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <Card className="w-full max-w-lg">
-          <div className="flex items-center gap-4 p-6 border-b border-border">
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <Card className="w-full max-w-lg flex flex-col max-h-[90vh]">
+          <div className="flex items-center gap-4 p-6 border-b border-border flex-shrink-0">
             <button
               onClick={() => setSelectedAction(null)}
               className="p-1 hover:bg-secondary rounded-lg transition-colors"
@@ -132,7 +132,7 @@ export function ActionModal({ lead, onClose }: ActionModalProps) {
             </button>
           </div>
 
-          <div className="p-6 space-y-4">
+          <div className="p-6 space-y-4 overflow-y-auto flex-1">
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2">Fecha</label>
               <input
@@ -163,23 +163,23 @@ export function ActionModal({ lead, onClose }: ActionModalProps) {
                 rows={4}
               />
             </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-3 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setSelectedAction(null)}
-                className="text-foreground hover:bg-secondary"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleScheduleSubmit}
-                className="bg-accent hover:bg-accent/90 text-accent-foreground"
-                disabled={!appointmentData.date || !appointmentData.time}
-              >
-                Agendar
-              </Button>
-            </div>
+          <div className="grid grid-cols-2 gap-3 p-6 border-t border-border flex-shrink-0">
+            <Button
+              variant="outline"
+              onClick={() => setSelectedAction(null)}
+              className="text-foreground hover:bg-secondary"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleScheduleSubmit}
+              className="bg-accent hover:bg-accent/90 text-accent-foreground"
+              disabled={!appointmentData.date || !appointmentData.time}
+            >
+              Agendar
+            </Button>
           </div>
         </Card>
       </div>
@@ -187,9 +187,9 @@ export function ActionModal({ lead, onClose }: ActionModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-lg">
-        <div className="flex justify-between items-center p-6 border-b border-border">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <Card className="w-full max-w-2xl flex flex-col max-h-[90vh]">
+        <div className="flex justify-between items-center p-6 border-b border-border flex-shrink-0">
           <div>
             <h2 className="text-xl font-bold text-foreground">Acciones Comerciales</h2>
             <p className="text-sm text-muted-foreground mt-1">{lead.name}</p>
@@ -202,7 +202,7 @@ export function ActionModal({ lead, onClose }: ActionModalProps) {
           </button>
         </div>
 
-        <div className="p-6 space-y-3">
+        <div className="p-6 space-y-3 overflow-y-auto flex-1">
           {actions.map((action) => (
             <button
               key={action.id}
@@ -220,7 +220,7 @@ export function ActionModal({ lead, onClose }: ActionModalProps) {
           ))}
         </div>
 
-        <div className="p-6 border-t border-border flex justify-end">
+        <div className="p-6 border-t border-border flex justify-end flex-shrink-0">
           <Button variant="outline" onClick={onClose}>
             Cerrar
           </Button>

@@ -21,19 +21,18 @@ interface LeadDetailModalProps {
 }
 
 export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
-  // mock histórico: fechas recientes con distribución por estado
+  // Histórico de trayectoria del lead específico
   const history = [
-    { date: '2024-01-28', Nuevo: 5, 'En Contacto': 2, Cualificado: 1 },
-    { date: '2024-01-29', Nuevo: 4, 'En Contacto': 3, Cualificado: 1 },
-    { date: '2024-01-30', Nuevo: 3, 'En Contacto': 4, Cualificado: 2 },
-    { date: '2024-01-31', Nuevo: 3, 'En Contacto': 3, Cualificado: 3 },
-    { date: '2024-02-01', Nuevo: 2, 'En Contacto': 4, Cualificado: 4 },
+    { date: '2024-01-28', status: 'Nuevo' },
+    { date: '2024-01-30', status: 'En Contacto' },
+    { date: '2024-02-02', status: 'Cualificado' },
+    { date: '2024-02-10', status: lead.status },
   ]
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl">
-        <div className="flex justify-between items-center p-6 border-b border-border">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <Card className="w-full max-w-2xl flex flex-col max-h-[90vh]">
+        <div className="flex justify-between items-center p-6 border-b border-border flex-shrink-0">
           <h2 className="text-xl font-bold text-foreground">Detalle del Lead</h2>
           <button
             onClick={onClose}
@@ -43,7 +42,7 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 overflow-y-auto flex-1">
           <div className="grid grid-cols-2 gap-6">
             <div>
               <label className="text-sm font-semibold text-muted-foreground">DNI</label>
@@ -87,16 +86,18 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
           <div>
             <label className="text-sm font-semibold text-muted-foreground">Histórico de estados</label>
             <div className="mt-3 bg-secondary p-3 rounded-lg border border-border">
-              <ChartContainer config={{ Nuevo: { label: 'Nuevo', color: '#3b82f6' }, 'En Contacto': { label: 'En Contacto', color: '#f59e0b' }, Cualificado: { label: 'Cualificado', color: '#10b981' } }}>
+              <ChartContainer config={{ status: { label: 'Estado', color: '#3b82f6' } }}>
                 <ResponsiveContainer>
                   <LineChart data={history}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="Nuevo" stroke="#3b82f6" strokeWidth={2} dot={{ r: 2 }} />
-                    <Line type="monotone" dataKey="En Contacto" stroke="#f59e0b" strokeWidth={2} dot={{ r: 2 }} />
-                    <Line type="monotone" dataKey="Cualificado" stroke="#10b981" strokeWidth={2} dot={{ r: 2 }} />
+                    <YAxis dataKey="status" type="category" />
+                    <Tooltip 
+                      formatter={(value) => value}
+                      labelFormatter={(label) => `Fecha: ${label}`}
+                      contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '6px' }}
+                    />
+                    <Line type="monotone" dataKey="status" stroke="#3b82f6" strokeWidth={3} dot={{ r: 6, fill: '#3b82f6' }} strokeLinecap="round" strokeLinejoin="round" />
                   </LineChart>
                 </ResponsiveContainer>
               </ChartContainer>
@@ -104,7 +105,7 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
           </div>
         </div>
 
-        <div className="p-6 border-t border-border flex justify-end gap-3">
+        <div className="p-6 border-t border-border flex justify-end gap-3 flex-shrink-0">
           <Button variant="outline" onClick={onClose}>
             Cerrar
           </Button>

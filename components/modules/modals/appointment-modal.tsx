@@ -15,6 +15,7 @@ interface Appointment {
   location?: string
   description?: string
   type: 'llamada' | 'reunion' | 'video'
+  status: 'active' | 'cancelled'
 }
 
 interface AppointmentModalProps {
@@ -33,7 +34,8 @@ export function AppointmentModal({ isOpen, onClose, onSave, appointment }: Appoi
     time: appointment?.time || '10:00',
     location: appointment?.location || '',
     description: appointment?.description || '',
-    type: appointment?.type || 'llamada'
+    type: appointment?.type || 'llamada',
+    status: appointment?.status || 'active'
   })
 
   useEffect(() => {
@@ -57,9 +59,9 @@ export function AppointmentModal({ isOpen, onClose, onSave, appointment }: Appoi
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md bg-card">
-        <div className="p-6">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <Card className="w-full max-w-md bg-card flex flex-col max-h-[90vh]">
+        <div className="p-6 border-b border-border flex-shrink-0">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-foreground">
               {appointment ? 'Editar Cita' : 'Nueva Cita'}
@@ -71,8 +73,9 @@ export function AppointmentModal({ isOpen, onClose, onSave, appointment }: Appoi
               <X className="w-5 h-5" />
             </button>
           </div>
+        </div>
 
-          <div className="space-y-4">
+        <div className="p-6 space-y-4 overflow-y-auto flex-1">
             <div>
               <label className="text-sm font-medium text-foreground block mb-2">
                 Título de la Cita *
@@ -177,7 +180,22 @@ export function AppointmentModal({ isOpen, onClose, onSave, appointment }: Appoi
                 {appointment ? 'Actualizar' : 'Programar'} Cita
               </Button>
             </div>
-          </div>
+        </div>
+
+        <div className="p-6 border-t border-border flex justify-end gap-3 flex-shrink-0">
+          <Button
+            onClick={onClose}
+            variant="outline"
+            className="bg-transparent"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSave}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            {appointment ? 'Actualizar' : 'Programar'} Cita
+          </Button>
         </div>
       </Card>
     </div>

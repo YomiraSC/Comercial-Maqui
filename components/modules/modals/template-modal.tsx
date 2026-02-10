@@ -12,7 +12,6 @@ interface Template {
   name: string
   subject: string
   content: string
-  type: 'Email' | 'SMS' | 'WhatsApp'
   createdDate: string
 }
 
@@ -24,7 +23,6 @@ interface TemplateModalProps {
 export function TemplateModal({ template, onClose }: TemplateModalProps) {
   const [formData, setFormData] = useState({
     name: template?.name || '',
-    type: template?.type || 'Email',
     subject: template?.subject || '',
     content: template?.content || '',
   })
@@ -42,9 +40,9 @@ export function TemplateModal({ template, onClose }: TemplateModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl">
-        <div className="flex justify-between items-center p-6 border-b border-border">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <Card className="w-full max-w-2xl flex flex-col max-h-[90vh]">
+        <div className="flex justify-between items-center p-6 border-b border-border flex-shrink-0">
           <h2 className="text-xl font-bold text-foreground">
             {template ? 'Editar Plantilla' : 'Nueva Plantilla'}
           </h2>
@@ -56,9 +54,8 @@ export function TemplateModal({ template, onClose }: TemplateModalProps) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
+          <div>
               <label className="block text-sm font-semibold text-foreground mb-2">Nombre</label>
               <input
                 type="text"
@@ -70,34 +67,17 @@ export function TemplateModal({ template, onClose }: TemplateModalProps) {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Tipo</label>
-              <select
-                name="type"
-                value={formData.type}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:border-primary"
-              >
-                <option value="Email">Email</option>
-                <option value="SMS">SMS</option>
-                <option value="WhatsApp">WhatsApp</option>
-              </select>
-            </div>
+          <div>
+            <label className="block text-sm font-semibold text-foreground mb-2">Asunto</label>
+            <input
+              type="text"
+              name="subject"
+              value={formData.subject}
+              onChange={handleChange}
+              placeholder="Ej: Bienvenido a maqui+"
+              className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:border-primary"
+            />
           </div>
-
-          {formData.type === 'Email' && (
-            <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">Asunto del Email</label>
-              <input
-                type="text"
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                placeholder="Ej: Bienvenido a maqui+"
-                className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:border-primary"
-              />
-            </div>
-          )}
 
           <div>
             <label className="block text-sm font-semibold text-foreground mb-2">Contenido</label>
@@ -115,15 +95,15 @@ export function TemplateModal({ template, onClose }: TemplateModalProps) {
 
           <div className="bg-secondary/50 border border-border rounded-lg p-4">
             <p className="text-sm font-semibold text-foreground mb-2">Vista Previa</p>
-            {formData.type === 'Email' && formData.subject && (
+            {formData.subject && (
               <p className="text-sm text-muted-foreground">Asunto: {formData.subject}</p>
             )}
-            <p className="text-sm text-muted-foreground mt-2">Cuerpo:</p>
+            <p className="text-sm text-muted-foreground mt-2">Contenido:</p>
             <p className="text-sm text-foreground mt-1 whitespace-pre-wrap">{formData.content.substring(0, 150)}...</p>
           </div>
         </form>
 
-        <div className="p-6 border-t border-border flex justify-end gap-3">
+        <div className="p-6 border-t border-border flex justify-end gap-3 flex-shrink-0">
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>

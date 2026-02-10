@@ -12,12 +12,15 @@ import { TemplatesModule } from '@/components/modules/templates-module'
 import { UsersModule } from '@/components/modules/users-module'
 import { BotCostModule } from '@/components/modules/bot-cost-module'
 import { RoutingRulesModule } from '@/components/modules/routing-rules-module'
+import { Menu, X, ChevronLeft, ChevronRight } from 'lucide-react'
 
 type ModuleType = 'leads' | 'tasks' | 'campaigns' | 'calendar' | 'templates' | 'users' | 'bot-cost' | 'routing-rules'
 
 export default function Home() {
   const { isAuthenticated, loading } = useAuth()
   const [activeModule, setActiveModule] = useState<ModuleType>('leads')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   if (loading) {
     return (
@@ -35,9 +38,52 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar activeModule={activeModule} onModuleChange={setActiveModule} />
-      <main className="flex-1 flex flex-col overflow-hidden">
+    <div className="flex h-screen bg-background overflow-hidden">
+      {/* Sidebar Desktop */}
+      <div className="hidden md:block">
+        <Sidebar 
+          activeModule={activeModule} 
+          onModuleChange={setActiveModule}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
+      </div>
+
+      {/* Sidebar Mobile - Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      <div
+        className={`fixed md:relative left-0 top-0 h-full z-50 transform transition-transform md:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="md:hidden">
+          <Sidebar 
+            activeModule={activeModule} 
+            onModuleChange={() => setSidebarOpen(false)} 
+            isMobile
+            collapsed={false}
+          />
+        </div>
+      </div>
+
+      <main className="flex-1 flex flex-col overflow-hidden w-full">
+        {/* Mobile Header */}
+        <div className="md:hidden bg-primary text-primary-foreground p-4 flex items-center justify-between border-b border-border">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 hover:bg-primary/80 rounded-lg transition-colors"
+          >
+            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+          <div className="text-xl font-bold">maqui+</div>
+          <div className="w-10" /> {/* Spacer */}
+        </div>
+
         <div className="flex-1 overflow-auto">
           {activeModule === 'leads' && <LeadsModule />}
           {activeModule === 'tasks' && <TasksModule />}

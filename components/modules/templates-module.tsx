@@ -11,7 +11,6 @@ interface Template {
   name: string
   subject: string
   content: string
-  type: 'Email' | 'SMS' | 'WhatsApp'
   createdDate: string
 }
 
@@ -21,7 +20,6 @@ const mockTemplates: Template[] = [
     name: 'Welcome Email',
     subject: 'Bienvenido a maqui+',
     content: 'Hola {nombre}, te damos la bienvenida a nuestra plataforma...',
-    type: 'Email',
     createdDate: '2024-02-01',
   },
   {
@@ -29,7 +27,6 @@ const mockTemplates: Template[] = [
     name: 'Come Back Offer',
     subject: 'Te echamos de menos - 20% descuento',
     content: 'Hemos notado que no has visitado en un tiempo. Aquí tienes un descuento especial...',
-    type: 'Email',
     createdDate: '2024-02-02',
   },
   {
@@ -37,7 +34,6 @@ const mockTemplates: Template[] = [
     name: 'SMS Reminder',
     content: 'Hola {nombre}, recordatorio: tu cita es mañana a las {hora}',
     subject: '',
-    type: 'SMS',
     createdDate: '2024-02-03',
   },
 ]
@@ -52,18 +48,7 @@ export function TemplatesModule() {
     setTemplates(templates.filter((t) => t.id !== id))
   }
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'Email':
-        return 'bg-blue-100 text-blue-800 border border-blue-200'
-      case 'SMS':
-        return 'bg-green-100 text-green-800 border border-green-200'
-      case 'WhatsApp':
-        return 'bg-cyan-100 text-cyan-800 border border-cyan-200'
-      default:
-        return 'bg-gray-100 text-gray-800 border border-gray-200'
-    }
-  }
+
 
   return (
     <div className="flex flex-col h-full">
@@ -91,11 +76,8 @@ export function TemplatesModule() {
           {templates.map((template) => (
             <Card key={template.id} className="flex flex-col h-full">
               <div className="p-6 flex-1">
-                <div className="flex justify-between items-start mb-4">
+                <div className="mb-4">
                   <h3 className="text-lg font-bold text-foreground">{template.name}</h3>
-                  <span className={`px-2 py-1 rounded text-xs font-semibold ${getTypeColor(template.type)}`}>
-                    {template.type}
-                  </span>
                 </div>
 
                 {template.subject && (
@@ -186,12 +168,7 @@ export function TemplatesModule() {
                 <p className="text-sm font-semibold text-muted-foreground">Contenido</p>
                 <p className="text-foreground mt-1 whitespace-pre-wrap">{viewTemplate.content}</p>
               </div>
-              <div>
-                <p className="text-sm font-semibold text-muted-foreground">Tipo</p>
-                <span className={`inline-block px-2 py-1 rounded text-xs font-semibold mt-1 ${getTypeColor(viewTemplate.type)}`}>
-                  {viewTemplate.type}
-                </span>
-              </div>
+
             </div>
             <div className="p-6 border-t border-border flex justify-end">
               <Button onClick={() => setViewTemplate(null)} variant="outline">

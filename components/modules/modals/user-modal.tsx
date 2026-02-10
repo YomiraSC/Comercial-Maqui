@@ -45,9 +45,9 @@ export function UserModal({ user, onClose }: UserModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-lg">
-        <div className="flex justify-between items-center p-6 border-b border-border">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <Card className="w-full max-w-lg flex flex-col max-h-[90vh]">
+        <div className="flex justify-between items-center p-6 border-b border-border flex-shrink-0">
           <h2 className="text-xl font-bold text-foreground">
             {user ? 'Editar Usuario' : 'Nuevo Usuario'}
           </h2>
@@ -59,7 +59,7 @@ export function UserModal({ user, onClose }: UserModalProps) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-foreground mb-2">Usuario</label>
@@ -149,7 +149,7 @@ export function UserModal({ user, onClose }: UserModalProps) {
           )}
         </form>
 
-        <div className="p-6 border-t border-border flex justify-end gap-3">
+        <div className="p-6 border-t border-border flex justify-end gap-3 flex-shrink-0">
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
