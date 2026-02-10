@@ -10,8 +10,10 @@ import { CampaignsModule } from '@/components/modules/campaigns-module'
 import { CalendarModule } from '@/components/modules/calendar-module'
 import { TemplatesModule } from '@/components/modules/templates-module'
 import { UsersModule } from '@/components/modules/users-module'
+import { BotCostModule } from '@/components/modules/bot-cost-module'
+import { RoutingRulesModule } from '@/components/modules/routing-rules-module'
 
-type ModuleType = 'leads' | 'tasks' | 'campaigns' | 'calendar' | 'templates' | 'users'
+type ModuleType = 'leads' | 'tasks' | 'campaigns' | 'calendar' | 'templates' | 'users' | 'bot-cost' | 'routing-rules'
 
 export default function Home() {
   const { isAuthenticated, loading } = useAuth()
@@ -43,6 +45,8 @@ export default function Home() {
           {activeModule === 'calendar' && <CalendarModule />}
           {activeModule === 'templates' && <TemplatesModule />}
           {activeModule === 'users' && <UsersModule />}
+          {activeModule === 'bot-cost' && <BotCostModule initialLeads={150} />}
+          {activeModule === 'routing-rules' && <RoutingRulesModule />}
         </div>
       </main>
     </div>

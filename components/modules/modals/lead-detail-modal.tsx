@@ -3,6 +3,8 @@
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { X } from 'lucide-react'
+import { ChartContainer } from '@/components/ui/chart'
+import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts'
 
 interface LeadDetailModalProps {
   lead: {
@@ -19,6 +21,15 @@ interface LeadDetailModalProps {
 }
 
 export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
+  // mock histórico: fechas recientes con distribución por estado
+  const history = [
+    { date: '2024-01-28', Nuevo: 5, 'En Contacto': 2, Cualificado: 1 },
+    { date: '2024-01-29', Nuevo: 4, 'En Contacto': 3, Cualificado: 1 },
+    { date: '2024-01-30', Nuevo: 3, 'En Contacto': 4, Cualificado: 2 },
+    { date: '2024-01-31', Nuevo: 3, 'En Contacto': 3, Cualificado: 3 },
+    { date: '2024-02-01', Nuevo: 2, 'En Contacto': 4, Cualificado: 4 },
+  ]
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-2xl">
@@ -71,6 +82,25 @@ export function LeadDetailModal({ lead, onClose }: LeadDetailModalProps) {
           <div>
             <label className="text-sm font-semibold text-muted-foreground">Notas</label>
             <p className="text-foreground mt-2 text-sm">Cliente potencial con alto interés en planes premium. Se requiere seguimiento dentro de 48 horas.</p>
+          </div>
+
+          <div>
+            <label className="text-sm font-semibold text-muted-foreground">Histórico de estados</label>
+            <div className="mt-3 bg-secondary p-3 rounded-lg border border-border">
+              <ChartContainer config={{ Nuevo: { label: 'Nuevo', color: '#3b82f6' }, 'En Contacto': { label: 'En Contacto', color: '#f59e0b' }, Cualificado: { label: 'Cualificado', color: '#10b981' } }}>
+                <ResponsiveContainer>
+                  <LineChart data={history}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="Nuevo" stroke="#3b82f6" strokeWidth={2} dot={{ r: 2 }} />
+                    <Line type="monotone" dataKey="En Contacto" stroke="#f59e0b" strokeWidth={2} dot={{ r: 2 }} />
+                    <Line type="monotone" dataKey="Cualificado" stroke="#10b981" strokeWidth={2} dot={{ r: 2 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
           </div>
         </div>
 

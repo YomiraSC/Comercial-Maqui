@@ -3,6 +3,7 @@
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { X, Settings } from 'lucide-react'
+import { PieChart, Pie, Cell, Tooltip as ReTooltip, ResponsiveContainer } from 'recharts'
 
 interface Campaign {
   id: string
@@ -49,6 +50,112 @@ export function CampaignDetailModal({ campaign, onClose }: CampaignDetailModalPr
             >
               <X className="w-6 h-6" />
             </button>
+          </div>
+
+          {/* Contactabilidad dashboard */}
+          <div className="space-y-4 mb-6">
+            <div className="grid grid-cols-5 gap-3">
+              {/** compute simple metrics */}
+              {(() => {
+                const enviados = Math.floor(campaign.leads * 0.8)
+                const entregados = Math.floor(enviados * 0.6)
+                const leidos = Math.floor(entregados * 0.3)
+                const fallidos = enviados - entregados
+                const total = campaign.leads
+                return (
+                  <>
+                    <div className="bg-secondary p-4 rounded-lg border border-border text-center">
+                      <div className="text-muted-foreground text-sm">Total</div>
+                      <div className="text-2xl font-bold text-foreground">{total}</div>
+                    </div>
+                    <div className="bg-secondary p-4 rounded-lg border border-border text-center">
+                      <div className="text-muted-foreground text-sm">Enviados</div>
+                      <div className="text-2xl font-bold text-primary">{enviados}</div>
+                    </div>
+                    <div className="bg-secondary p-4 rounded-lg border border-border text-center">
+                      <div className="text-muted-foreground text-sm">Entregados</div>
+                      <div className="text-2xl font-bold text-green-600">{entregados}</div>
+                    </div>
+                    <div className="bg-secondary p-4 rounded-lg border border-border text-center">
+                      <div className="text-muted-foreground text-sm">Leídos</div>
+                      <div className="text-2xl font-bold text-purple-600">{leidos}</div>
+                    </div>
+                    <div className="bg-secondary p-4 rounded-lg border border-border text-center">
+                      <div className="text-muted-foreground text-sm">Fallidos</div>
+                      <div className="text-2xl font-bold text-red-600">{fallidos}</div>
+                    </div>
+                    <div className="col-span-5 mt-2">
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                          <div className="text-sm text-muted-foreground">Tasa de Entrega</div>
+                          <div className="text-2xl font-bold text-green-600">{((entregados / (enviados || 1)) * 100).toFixed(1)}%</div>
+                        </div>
+                        <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                          <div className="text-sm text-muted-foreground">Tasa de Lectura</div>
+                          <div className="text-2xl font-bold text-purple-600">{((leidos / (entregados || 1)) * 100).toFixed(1)}%</div>
+                        </div>
+                        <div className="bg-white p-4 rounded-lg shadow-sm text-center">
+                          <div className="text-sm text-muted-foreground">Tasa de Fallo</div>
+                          <div className="text-2xl font-bold text-red-600">{((fallidos / (enviados || 1)) * 100).toFixed(1)}%</div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )
+              })()}
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-secondary p-4 rounded-lg border border-border">
+                <div className="text-sm font-semibold text-foreground mb-2">Distribución de Estados</div>
+                <div style={{ height: 160 }}>
+                  <ResponsiveContainer>
+                    <PieChart>
+                      {(() => {
+                        const enviados = Math.floor(campaign.leads * 0.8)
+                        const entregados = Math.floor(enviados * 0.6)
+                        const leidos = Math.floor(entregados * 0.3)
+                        const fallidos = enviados - entregados
+                        const data = [
+                          { name: 'Enviados', value: enviados },
+                          { name: 'Entregados', value: entregados },
+                          { name: 'Leídos', value: leidos },
+                          { name: 'Fallidos', value: fallidos },
+                        ]
+                        const COLORS = ['#2b6cb0','#16a34a','#7c3aed','#ef4444']
+                        return (
+                          <>
+                            <Pie data={data} dataKey="value" nameKey="name" outerRadius={60} fill="#8884d8" label>
+                              {data.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <ReTooltip />
+                          </>
+                        )
+                      })()}
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              <div className="bg-secondary p-4 rounded-lg border border-border">
+                <div className="text-sm font-semibold text-foreground mb-2">Funnel de Conversión</div>
+                <div className="space-y-2">
+                  {(() => {
+                    const enviados = Math.floor(campaign.leads * 0.8)
+                    const entregados = Math.floor(enviados * 0.6)
+                    const leidos = Math.floor(entregados * 0.3)
+                    const pct = (a:number,b:number) => Math.round((a/(b||1))*100)
+                    return (
+                      <>
+                        <div className="bg-blue-500 text-white rounded-md p-2">Enviados {enviados} ({pct(enviados,campaign.leads)}%)</div>
+                        <div className="bg-green-500 text-white rounded-md p-2">Entregados {entregados} ({pct(entregados,enviados)}%)</div>
+                        <div className="bg-purple-600 text-white rounded-md p-2">Leídos {leidos} ({pct(leidos,entregados)}%)</div>
+                      </>
+                    )
+                  })()}
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-6 mb-6">

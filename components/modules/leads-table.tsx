@@ -17,6 +17,7 @@ interface Lead {
   assignedDate: string
   product: string
   priority: 'Alta' | 'Media' | 'Baja'
+  score?: number
 }
 
 const mockLeads: Lead[] = [
@@ -29,6 +30,7 @@ const mockLeads: Lead[] = [
     assignedDate: '2024-02-01',
     product: 'Plan Premium',
     priority: 'Alta',
+    score: 78,
   },
   {
     id: '2',
@@ -39,6 +41,7 @@ const mockLeads: Lead[] = [
     assignedDate: '2024-02-02',
     product: 'Plan Standard',
     priority: 'Media',
+    score: 45,
   },
   {
     id: '3',
@@ -49,6 +52,7 @@ const mockLeads: Lead[] = [
     assignedDate: '2024-02-03',
     product: 'Plan Basic',
     priority: 'Baja',
+    score: 22,
   },
 ]
 
@@ -105,8 +109,43 @@ export function LeadsTable({ searchTerm, filterPriority = '', filterStatus = '',
     }
   }
 
+  const getScoreBadge = (score?: number) => {
+    if (score === undefined) return <span className="text-sm text-muted-foreground">—</span>
+    if (score >= 70)
+      return <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">{score} — Calentar</span>
+    if (score >= 40)
+      return <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 border border-yellow-200">{score} — Revisar</span>
+    return <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">{score} — Scorear</span>
+  }
+
+  const exportCSV = (leads: Lead[]) => {
+    const headers = ['id','dni','name','phone','status','assignedDate','product','priority','score']
+    const rows = leads.map(l => [l.id,l.dni,l.name,l.phone,l.status,l.assignedDate,l.product,l.priority,(l.score ?? '')])
+    const csv = [headers.join(','), ...rows.map(r => r.map(String).map(s => `"${s.replace(/"/g,'""')}"`).join(','))].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `leads_export_${new Date().toISOString().slice(0,10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div />
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => exportCSV(filteredLeads)}
+            className="text-muted-foreground"
+          >
+            Exportar data
+          </Button>
+        </div>
+      </div>
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -115,6 +154,7 @@ export function LeadsTable({ searchTerm, filterPriority = '', filterStatus = '',
                 <th className="px-6 py-3 text-left font-semibold text-foreground">DNI</th>
                 <th className="px-6 py-3 text-left font-semibold text-foreground">Nombre</th>
                 <th className="px-6 py-3 text-left font-semibold text-foreground">Teléfono</th>
+                <th className="px-6 py-3 text-left font-semibold text-foreground">Scoring</th>
                 <th className="px-6 py-3 text-left font-semibold text-foreground">Estado</th>
                 <th className="px-6 py-3 text-left font-semibold text-foreground">Fecha Asignación</th>
                 <th className="px-6 py-3 text-left font-semibold text-foreground">Producto</th>
@@ -129,6 +169,7 @@ export function LeadsTable({ searchTerm, filterPriority = '', filterStatus = '',
                     <td className="px-6 py-4 font-mono text-foreground">{lead.dni}</td>
                     <td className="px-6 py-4 font-medium text-foreground">{lead.name}</td>
                     <td className="px-6 py-4 text-foreground">{lead.phone}</td>
+                    <td className="px-6 py-4">{getScoreBadge(lead.score)}</td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(lead.status)}`}>
                         {lead.status}
@@ -176,7 +217,7 @@ export function LeadsTable({ searchTerm, filterPriority = '', filterStatus = '',
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-muted-foreground">
+                  <td colSpan={9} className="px-6 py-12 text-center text-muted-foreground">
                     No se encontraron leads con los filtros aplicados
                   </td>
                 </tr>

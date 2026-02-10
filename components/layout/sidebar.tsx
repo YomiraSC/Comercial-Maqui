@@ -1,6 +1,6 @@
 'use client'
 
-import { Users, ListChecks as ListTasks, Mail, MessageSquare, Users2, Calendar, LogOut } from 'lucide-react'
+import { Users, ListChecks as ListTasks, Mail, MessageSquare, Users2, Calendar, LogOut, DollarSign, Settings } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { Button } from '@/components/ui/button'
 
@@ -37,6 +37,16 @@ export function Sidebar({ activeModule, onModuleChange }: SidebarProps) {
       id: 'templates',
       label: 'Plantillas',
       icon: Mail,
+    },
+    {
+      id: 'bot-cost',
+      label: 'Costo Bot',
+      icon: DollarSign,
+    },
+    {
+      id: 'routing-rules',
+      label: 'Reglas Enrutamiento',
+      icon: Settings,
     },
     {
       id: 'users',
